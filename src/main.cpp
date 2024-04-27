@@ -23,9 +23,9 @@ public:
 	/// Displays the success chance for the entire level.
 	//CCLabelBMFont* m_level_percent = nullptr;
 
-	Section* sections = nullptr;
-	int section_count = 0;
-	int current_section = 0;
+	//Section* sections = nullptr;
+	//int section_count = 0;
+	//int current_section = 0;
 
 	/// Create widget. 
 	static RunStatsWidget* create() {
@@ -36,6 +36,7 @@ public:
 		}
 		else {
 			CC_SAFE_DELETE(ret);
+			return nullptr;
 		}
 	}
 
@@ -48,53 +49,39 @@ public:
 		Section sec2 = { "Everything else (2-100)", 2 };
 
 		// FIXME: where to free this memory?
-		sections = new Section[]{ sec1, sec2 };
-		section_count = 2;
+		//sections = new Section[]{ sec1, sec2 };
+		//section_count = 2;
 
 		const auto anchor = ccp(0.0, 1.0);
 
 		// Dummy text for now. 
-		m_section_name = CCLabelBMFont::create(sec1.name, "bigFont.fnt");
-		m_section_name->setOpacity(64);
-		m_section_name->setAnchorPoint(anchor);
-		m_section_name->setPosition(0.0, 0.0);
-		this->addChild(m_section_name);
+		auto section_name = CCLabelBMFont::create(sec1.name, "bigFont.fnt");
+		section_name->setOpacity(64);
+		section_name->setAnchorPoint(anchor);
+		section_name->setPosition(0.0, 0.0);
 
-		auto label_height = m_section_name->getScaledContentSize().height;
+		auto label_size = section_name->getScaledContentSize();
 
-		m_section_percent = CCLabelBMFont::create("88% / 12%", "bigFont.fnt");m_section_percent->setOpacity(64);
-		m_section_percent->setAnchorPoint(anchor);
-		m_section_percent->setPosition(0.0, -label_height);
-		this->addChild(m_section_percent);
+		auto section_percent = CCLabelBMFont::create("88% / 12%", "bigFont.fnt");section_percent->setOpacity(64);
+		section_percent->setAnchorPoint(anchor);
+		section_percent->setPosition(0.0, -label_size.height);
 
-		float height = m_section_name->getScaledContentSize().height +
-			m_section_percent->getScaledContentSize().height;
-		float width = m_section_name->getScaledContentSize().width;
-		this->setContentSize({ width, height });
+		this->addChild(section_name);
+		this->addChild(section_percent);
+		this->setContentSize({ label_size.width, 2 * label_size.height });
 
 		return true;
 	}
-
-
-	/*
-		void update_labels(PlayLayer* layer, int percent) {
-			if (layer->m_isPracticeMode) {
-				m_section_label->setString("Practice");
-				m_was_practice = true;
-			}
-			else if (layer->m_isTestMode) {
-				m_section_label->setString("Testmode");
-				m_was_practice = false;
-			}
-
-			m_info_label->setString(fmt::format("From {}%", percent).c_str());
-		}
-		*/
 };
 
 class $modify(PlayLayer) {
-	RunStatsWidget* m_widget = nullptr;
+	/// m_fields
+	struct Fields {
+		/// Our widget.
+		RunStatsWidget* m_widget = nullptr;
+	};
 
+	/// Initializes the widget.
 	bool init(GJGameLevel * level, bool _arg1, bool _arg2) {
 		if (!PlayLayer::init(level, _arg1, _arg2)) {
 			return false;
@@ -112,33 +99,35 @@ class $modify(PlayLayer) {
 
 		const auto win_size = CCDirector::sharedDirector()->getWinSize();
 
-		m_widget = RunStatsWidget::create();
-		m_widget->setAnchorPoint(ccp(0.0, 0.0));
-		m_widget->setPosition(0.0, win_size.height);
-		m_widget->setScale(0.3);
-		m_widget->setZOrder(999);
-		this->addChild(m_widget);
+		auto widget = RunStatsWidget::create();
+		widget->setAnchorPoint(ccp(0.0, 0.0));
+		widget->setPosition(0.0, win_size.height);
+		widget->setScale(0.3);
+		widget->setZOrder(999);
+		this->addChild(widget);
 
 		return true;
 	}
 
 	/// Resets the section.
-	void resetLevel() {
+	/*void resetLevel() {
 		PlayLayer::resetLevel();
-		m_widget->current_section = 0;
-		m_widget->m_section_name->setCString(m_widget->sections[0].name);
+		auto widget = m_fields->m_widget;
+		widget->current_section = 0;
+		widget->m_section_name->setCString(widget->sections[0].name);
 	}
 
 	/// Updates the section.
 	void updateProgressbar() {
 		PlayLayer::updateProgressbar();
-		int next_section = m_widget->current_section + 1;
-		if (next_section < m_widget->section_count) {
-			auto sec = m_widget->sections[next_section];
+		auto widget = m_fields->m_widget;
+		int next_section = widget->current_section + 1;
+		if (next_section < widget->section_count) {
+			auto sec = widget->sections[next_section];
 			if (sec.start <= this->getCurrentPercentInt()) {
-				m_widget->current_section = next_section;
-				m_widget->m_section_name->setCString(sec.name);
+				widget->current_section = next_section;
+				widget->m_section_name->setCString(sec.name);
 			}
 		}
-	}
+	}*/
 };
