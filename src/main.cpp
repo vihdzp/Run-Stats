@@ -112,15 +112,16 @@ class $modify(PlayLayer) {
 	}
 
 	/// Resets the section.
-	void resetLevel() {
+	/*void resetLevel() {
 		PlayLayer::resetLevel();
 		auto widget = m_fields->m_widget;
 		widget->m_section_name->setCString("0% - 1%");
-	}
+	}*/
 
 	/// Updates the section.
 	void updateProgressbar() {
 		PlayLayer::updateProgressbar();
-		m_fields->m_widget->m_section_name->setCString("1% - 100%");
+		auto widget = m_fields->m_widget;
+		widget->m_section_name->setCString("1% - 100%");
 	}
 };
