@@ -7,12 +7,12 @@
 using namespace geode::prelude;
 
 /// Represents a section in a level.
-struct Section {
+/*struct Section {
 	/// The name of the section (including the percentage it spans).
 	const char* name;
 	/// Starting percentage.
 	int start;
-};
+};*/
 
 class RunStatsWidget : public CCNode {
 public:
@@ -24,8 +24,8 @@ public:
 	//CCLabelBMFont* m_level_percent = nullptr;
 
 	//Section* sections = nullptr;
-	//int section_count = 0;
-	//int current_section = 0;
+	int section_count = 0;
+	int current_section = 0;
 
 	/// Create widget. 
 	static RunStatsWidget* create() {
@@ -45,24 +45,25 @@ public:
 			return false;
 		}
 
-		Section sec1 = { "First click (0-2)", 0 };
-		Section sec2 = { "Everything else (2-100)", 2 };
+		//Section sec1 = { "First click (0-2)", 0 };
+		//Section sec2 = { "Everything else (2-100)", 2 };
 
 		// FIXME: where to free this memory?
 		//sections = new Section[]{ sec1, sec2 };
-		//section_count = 2;
+		section_count = 2;
 
 		const auto anchor = ccp(0.0, 1.0);
 
 		// Dummy text for now. 
-		auto section_name = CCLabelBMFont::create(sec1.name, "bigFont.fnt");
+		auto section_name = CCLabelBMFont::create("0% - 1%", "bigFont.fnt");
 		section_name->setOpacity(64);
 		section_name->setAnchorPoint(anchor);
 		section_name->setPosition(0.0, 0.0);
 
 		auto label_size = section_name->getScaledContentSize();
 
-		auto section_percent = CCLabelBMFont::create("88% / 12%", "bigFont.fnt");section_percent->setOpacity(64);
+		auto section_percent = CCLabelBMFont::create("dummy", "bigFont.fnt");
+		section_percent->setOpacity(64);
 		section_percent->setAnchorPoint(anchor);
 		section_percent->setPosition(0.0, -label_size.height);
 
@@ -91,7 +92,8 @@ class $modify(PlayLayer) {
 		CCArrayExt<CCNode*> children = this->getChildren();
 		for (auto* child : children) {
 			using namespace std::literals::string_view_literals;
-			if (auto* label = typeinfo_cast<CCLabelBMFont*>(child); label && label->getString() == "Testmode"sv) {
+			auto* label = typeinfo_cast<CCLabelBMFont*>(child);
+			if (label && label->getString() == "Testmode"sv) {
 				label->setVisible(false);
 				break;
 			}
@@ -110,24 +112,15 @@ class $modify(PlayLayer) {
 	}
 
 	/// Resets the section.
-	/*void resetLevel() {
+	void resetLevel() {
 		PlayLayer::resetLevel();
 		auto widget = m_fields->m_widget;
-		widget->current_section = 0;
-		widget->m_section_name->setCString(widget->sections[0].name);
+		widget->m_section_name->setCString("0% - 1%");
 	}
 
 	/// Updates the section.
 	void updateProgressbar() {
 		PlayLayer::updateProgressbar();
-		auto widget = m_fields->m_widget;
-		int next_section = widget->current_section + 1;
-		if (next_section < widget->section_count) {
-			auto sec = widget->sections[next_section];
-			if (sec.start <= this->getCurrentPercentInt()) {
-				widget->current_section = next_section;
-				widget->m_section_name->setCString(sec.name);
-			}
-		}
-	}*/
+		m_fields->m_widget->m_section_name->setCString("1% - 100%");
+	}
 };
